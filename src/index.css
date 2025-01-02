@@ -1,0 +1,48 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/*----PERSONAL CSS-----*/
+  
+/*---General---*/  
+
+/*---Class---*/
+
+/*---ID---*/
+#hero-image {
+  position: relative;
+  height: 80vh; /* Full viewport height */
+  width: 100%; /* Ensure the section spans the full width */
+  background-image: url('./assets/Pen.jpg'); /* Adjust the path as needed */
+  background-size: cover; /* Ensures the image covers the entire container */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat;
+  overflow: hidden; /* Prevents any overflowing content */
+  display: flex; /* Enables flexbox for alignment */
+  align-items: center; /* Centers content vertically */
+  justify-content: center; /* Centers content horizontally */
+}
+
+#hero-texts {
+  position: absolute; /* Absolute positioning inside the hero section */
+  top: 50%; /* Centers vertically */
+  left: 50%; /* Centers horizontally */
+  transform: translate(-50%, -50%); /* Adjusts position for proper centering */
+  z-index: 2; /* Places the text above the background */
+  text-align: center; /* Centers the text */
+  color: #ffffff; /* Makes the text visible */
+  padding: 5rem; /* Adds spacing around the text */
+  background-color: rgba(0, 0, 0, 0.5); /* Optional: Adds contrast with a translucent background */
+  border-radius: 10px; /* Optional: Rounds the corners */
+}
+
