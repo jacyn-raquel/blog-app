@@ -22,8 +22,8 @@ export default function Home(){
 			setData({
 				title: `Welcome to Blog-o-mania, ${user.firstName}! `,
 				subtitle: "Share Your Story, Shape the World",
-				buttonDestinationOne: "/posts/",
-				buttonDestinationTwo: "/posts/allPostsByUser",
+				buttonDestinationOne: "/posts/allPosts",
+				buttonDestinationTwo: "/posts",
 				buttonLabelOne: "Add post",
 				buttonLabelTwo: "See own posted blogs"
 			})

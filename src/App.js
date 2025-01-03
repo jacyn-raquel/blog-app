@@ -9,6 +9,9 @@ import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Posts from './pages/Posts';
+import PostView from './pages/PostView';
+import Logout from './pages/Logout';
+import Error from './pages/Error';
 
 // Import Packages
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
@@ -94,7 +97,9 @@ function App() {
             <Route path="/register" element={<Register/>}/>
             <Route path="/login" element={<Login/>}/>
             <Route path="/posts" element={<Posts/>}/>
-            {/*<Route path="*" element={<Error/>}/>*/}
+            <Route path="/posts/:postId" element={<PostView/>}/>
+            <Route path="/logout" element={<Logout/>}/>
+            <Route path="*" element={<Error/>}/>
           </Routes>
         </Container>
       </Router>

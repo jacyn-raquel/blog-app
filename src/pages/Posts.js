@@ -28,9 +28,8 @@ export default function Posts(){
 			if(!user.isAdmin){
 				if(data.message === 'All posts by this user are retrieved successfully!'){
 
-					setData(data);
+					setData(data.posts);
 
-					notyf.success('All posts by this user are retrieved successfully!');
 				} else if(data.message === "No posts made by this user."){
 					notyf.error('No posts made by this user.');
 				} else {
@@ -46,12 +45,16 @@ export default function Posts(){
 			
 		})
 	}
+
+	useEffect(()=>{
+		fetchData();
+	},[])
 	return(
 		user.id !== null ?
 			user.isAdmin ?
-				<AdminView posts={data} />
+				<AdminView posts={data} fetchPosts={fetchData} />
 				:
-				<UserView posts={data}/>
+				<UserView posts={data} fetchPosts={fetchData}/>
 			:
 			<Navigate to="/login"/>
 		)

@@ -1,14 +1,19 @@
-import {Card, Button} from 'react-bootstrap';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
+import UserContext from '../UserContext';
+import PostCard from './PostCard';
 
-export default function UserView({posts}){
-	const {id, userId, title, category, content, author} = posts;
+export default function UserView({ posts, fetchPosts }) {
+    const { user } = useContext(UserContext);
 
-	console.log(posts);
-
-
-
-	return(
-		
-		)
+    return (
+        <>
+            {posts.length > 0 ? (
+                posts.map(post => (
+                    <PostCard key={post._id} postProp={post} fetchPosts={fetchPosts} />
+                ))
+            ) : (
+                <p>No posts available</p>
+            )}
+        </>
+    );
 }
