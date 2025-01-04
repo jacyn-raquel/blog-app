@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import Posts from './pages/Posts';
 import PostView from './pages/PostView';
 import Logout from './pages/Logout';
+import AddPost from './pages/AddPost';
 import Error from './pages/Error';
 
 // Import Packages
@@ -98,6 +99,7 @@ function App() {
             <Route path="/login" element={<Login/>}/>
             <Route path="/posts" element={<Posts/>}/>
             <Route path="/posts/:postId" element={<PostView/>}/>
+            <Route path="/posts/addPost" element={<AddPost/>}/>
             <Route path="/logout" element={<Logout/>}/>
             <Route path="*" element={<Error/>}/>
           </Routes>

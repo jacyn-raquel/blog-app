@@ -102,7 +102,7 @@ export default function Register(){
 	        type="password"
 	        value = {confirmPassword}
 	        onChange = {event => setConfirmPassword(event.target.value)}
-	        placeholder="Enter password"
+	        placeholder="Retype password"
 	        required />
 	      </Form.Group>
 	      {
@@ -111,7 +111,7 @@ export default function Register(){
 	      	:
 	      	<Button variant="danger" disabled> Fill out ALL the fields first </Button>
 	      }
-	      <p>Already have an account? Login <a href="/login">here</a>.</p>
+	      <p className="mt-3">Already have an account? Login <a href="/login">here</a>.</p>
 	    </Form>
 		)
 }
