@@ -11,50 +11,43 @@ export default function Posts(){
 
 	const {user} = useContext(UserContext);
 
-	const [data, setData] = useState([]);
+	const [posts, setPosts] = useState([]);
 
 	const fetchData = () => {
-		const fetchURL = user.isAdmin ? "posts/allPosts" : "posts/allPostsByUser";
 
-		fetch(`${process.env.REACT_APP_API_URL}/${fetchURL}`,{
-			headers:{
-				"Authorization": `Bearer ${localStorage.getItem('token')}`
-			}
-		})
-		.then(res => res.json())
-		.then(data => {
-			console.log(data);
+    fetch(`${process.env.REACT_APP_API_URL}/posts/allPosts`, {
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem('token')}`
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+            if (data.message === "All Posts retrieved." && data.result?.length > 0) {
+                setPosts(data.result); // Ensure data is set for admin
+                notyf.success('All Posts retrieved');
+            } else if (data.result?.length === 0) {
+                notyf.error('No posts exist.');
+            } else {
+                notyf.error('Something went wrong. Contact IT Admin.');
+            }
+    })
+    .catch(error => {
+        console.error('Error fetching posts:', error);
+        notyf.error('Failed to fetch posts. Please try again later.');
+    });
+};
 
-			if(!user.isAdmin){
-				if(data.message === 'All posts by this user are retrieved successfully!'){
-
-					setData(data.posts);
-
-				} else if(data.message === "No posts made by this user."){
-					notyf.error('No posts made by this user.');
-				} else {
-					notyf.error('Something went wrong! Contact IT Admin.')
-				}
-			} else {
-				if(data.message === "All Posts retrieved"){
-					notyf.success('All Posts retrieved');
-				} else {
-					notyf.error('No posts exists.');
-				}
-			}
-			
-		})
-	}
-
-	useEffect(()=>{
+	useEffect(() => {
 		fetchData();
-	},[])
+	}, [user]);
+
 	return(
 		user.id !== null ?
 			user.isAdmin ?
-				<AdminView posts={data} fetchPosts={fetchData} />
+				<AdminView posts={posts} fetchPosts={fetchData} />
 				:
-				<UserView posts={data} fetchPosts={fetchData}/>
+				<UserView posts={posts} fetchPosts={fetchData}/>
 			:
 			<Navigate to="/login"/>
 		)

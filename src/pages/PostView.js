@@ -58,21 +58,23 @@ export default function PostView() {
 
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/posts/${postId}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
+  fetch(`${process.env.REACT_APP_API_URL}/posts/${postId}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      setTitle(data.result.title || '');
+      setCategory(data.result.category || '');
+      setContent(data.result.content || '');
+      setComments(data.result.comments || []); // Use empty array as fallback
+      setDatePostCreated(data.result.datePostCreated || '');
     })
-      .then((res) => res.json())
-      .then((data) => {
-        setTitle(data.result.title);
-        setCategory(data.result.category);
-        setContent(data.result.content);
-        setComments(data.result.comments);
-        setDatePostCreated(data.result.datePostCreated);
-      });
-  }, [postId]);
+    .catch((error) => console.error('Error fetching post:', error));
+}, [postId]);
+
 
   return (
     <Container>
@@ -88,10 +90,10 @@ export default function PostView() {
               <Card.Title>Comments:</Card.Title>
               {comments.length > 0 ? (
                 comments.map((comment, index) => (
-                  <div key={index}>
-                    <Card.Text> <strong>{comment.firstName} {comment.lastName}:</strong> {comment.comment}</Card.Text>
-                    <Card.Text>
-                     <strong>Date Created:</strong> {new Date(datePostCreated).toLocaleDateString()}
+                  <div className="border p-3 rounded-2 mt-2" key={index}>
+                    <Card.Text> <strong>{comment.firstName} {comment.lastName}:</strong> {comment.comment}
+                    <br/>
+                    <strong>Date Created:</strong> {new Date(datePostCreated).toLocaleDateString()}
                     </Card.Text>
                   </div>
                 ))

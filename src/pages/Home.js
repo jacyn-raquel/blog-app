@@ -9,14 +9,15 @@ export default function Home(){
 
 
 	useEffect(() => {
-		user.id === null ?
+		user.id !== null ?
+			user.isAdmin ?
 			setData({
-				title: "Welcome to Blog-o-mania",
-				subtitle: "Unleash Your Words, Inspire the World",
-				buttonDestinationOne: "/login",
-				buttonDestinationTwo: "/posts",
-				buttonLabelOne: "Login first to start posting",
-				buttonLabelTwo: "See posted blogs"
+				title: `Welcome to Blog-o-mania, Admin: ${user.firstName}! `,
+				subtitle: "Manage, Inspire, and Empower with Your Vision.",
+				buttonDestinationOne: "/posts",
+				buttonDestinationTwo: "/logout",
+				buttonLabelOne: "See all posted blogs",
+				buttonLabelTwo: "Logout from my account"
 			})
 			:
 			setData({
@@ -27,6 +28,16 @@ export default function Home(){
 				buttonLabelOne: "Add post",
 				buttonLabelTwo: "See own posted blogs"
 			})
+		:
+		
+		setData({
+			title: "Welcome to Blog-o-mania",
+			subtitle: "Unleash Your Words, Inspire the World",
+			buttonDestinationOne: "/login",
+			buttonDestinationTwo: "/posts",
+			buttonLabelOne: "Login first to start posting",
+			buttonLabelTwo: "See posted blogs"
+		})
 	},[user])
 
 	return(

@@ -1,112 +1,62 @@
-import UserContext from '../UserContext';
-import { useContext, useEffect, useState } from 'react';
-import { Table, Row, Button, Modal } from 'react-bootstrap';
-import DeletePost from './DeletePost';
+import { useState, useEffect } from "react";
+import { Table, Row, Button, Modal } from "react-bootstrap";
+import DeletePost from "./DeletePost";
+import {Notyf} from 'notyf';
 
 export default function AdminView({ posts, fetchPosts }) {
-  const { user } = useContext(UserContext);
-  const [tableData, setTableData] = useState([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState(null);
   const [postIdToDeleteFrom, setPostIdToDeleteFrom] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
+  const notyf = new Notyf();
 
-  console.log(posts);
-  
-  const handleRemoveComment = (postId, commentIndex) => {
-    // Remove the comment from the post
-    const updatedPosts = posts.map(post => {
-      if (post._id === postId) {
-        const updatedComments = post.comments.filter((_, index) => index !== commentIndex);
-        return { ...post, comments: updatedComments };
-      }
-      return post;
-    });
-
-    // Update the state with the new post data
-    setTableData(updatedPosts);
-
-    // Call the API to delete the comment (this assumes you have an API for this)
-    fetch(`/api/posts/${postId}/comments/${commentIndex}`, {
-      method: 'DELETE',
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Comment removed:', data);
-        fetchPosts();  // Reload posts data after comment removal
-      })
-      .catch(error => {
-        console.error('Error removing comment:', error);
-      });
+  const handleRemoveComment = (postId, commentId) => {
+    setCommentToDelete(commentId);
+    setPostIdToDeleteFrom(postId);
+    setShowConfirmModal(true);
   };
 
   const handleConfirmDelete = () => {
-    // Call the deletion function with the stored postId and commentIndex
-    if (commentToDelete !== null && postIdToDeleteFrom) {
-      fetch(`/api/posts/${postIdToDeleteFrom}/comments/${commentToDelete}`, {
-        method: 'DELETE',
+    // if (commentToDelete !== null && postIdToDeleteFrom) {
+      fetch(`${process.env.REACT_APP_API_URL}/posts/${postIdToDeleteFrom}/deleteComment/${commentToDelete}`, {
+        method: "DELETE",
+        headers: {
+        	"Authorization": `Bearer ${localStorage.getItem('token')}`
+        }
       })
-        .then(response => response.json())
-        .then(data => {
-          console.log('Comment removed:', data);
-          fetchPosts();  // Reload posts data after comment removal
-          setShowConfirmModal(false);
+        .then((response) => response.json())
+        .then((result) => {
+          if (result.message === "Comment has been successfully deleted!"){
+          	fetchPosts();
+          	setShowConfirmModal(false);
+
+          	notyf.success("Comment has been successfully deleted!");
+          } else if (result.message === "Comment already deleted!"){
+          	notyf.error('Comment already deleted!');
+          } else {
+          	notyf.error('Something went wrong. Contact IT Admin.');
+          }
+          
         })
-        .catch(error => {
-          console.error('Error removing comment:', error);
+        .catch((error) => {
+          console.error("Error removing comment:", error);
           setShowConfirmModal(false);
         });
-    }
+    // }
   };
 
   const handleCancelDelete = () => {
     setShowConfirmModal(false);
   };
 
-  // Map the posts and generate table rows
-  function mapPost() {
-    if (!posts || posts.length === 0) {
-      // Handle case where there are no posts
-      setTableData([<tr key="no-posts"><td colSpan="6" className="text-center">No posts exist</td></tr>]);
-      return;
-    }
-
-    const rows = posts.map(post => (
-      <tr key={post.result._id}>
-        <td>{post.result.title}</td>
-        <td>{post.result.category}</td>
-        <td>{post.result.content}</td>
-        <td>{post.result.datePostCreated}</td>
-        <td>
-          {/* List the comments */}
-          <ul>
-            {post.comments && post.comments.map((comment, index) => (
-              <li key={index}>
-                {comment}
-                <Button 
-                  variant="danger" 
-                  size="sm" 
-                  onClick={() => handleRemoveComment(post._id, index)}
-                  className="mx-2"
-                >
-                  Remove
-                </Button>
-              </li>
-            ))}
-          </ul>
-        </td>
-        <td>
-          <DeletePost post={post} fetchPosts={fetchPosts} />
-        </td>
-      </tr>
-    ));
-
-    setTableData(rows);
-  }
-
   useEffect(() => {
-    mapPost();
-  }, [user, posts]);  // Ensure this effect runs when posts data changes
+    setIsLoading(false);
+  }, [posts]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -121,16 +71,60 @@ export default function AdminView({ posts, fetchPosts }) {
               <th>Category</th>
               <th>Content</th>
               <th>Post Created</th>
-              <th colSpan="2">Actions</th>
+              <th>Comments</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {tableData}
+            {posts.length > 0 ? (
+              posts.map((post) => (
+                <tr key={post._id}>
+                  <td>{post.title || "No Title"}</td>
+                  <td>{post.category || "Uncategorized"}</td>
+                  <td>{post.content || "No Content"}</td>
+                  <td>
+                    {post.datePostCreated
+                      ? new Date(post.datePostCreated).toLocaleDateString()
+                      : "Unknown Date"}
+                  </td>
+                  <td>
+                    {post.comments && post.comments.length > 0 ? (
+                      <ul>
+                        {post.comments.map((comment, index) => (
+                          <li key={index}>
+                            {/* Ensure you are accessing the correct property for the comment */}
+                            {comment.comment || "No Comment Text"}
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => handleRemoveComment(post._id, comment._id)}
+                              className="mx-2"
+                            >
+                              Remove
+                            </Button>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      "No Comments"
+                    )}
+                  </td>
+                  <td>
+                    <DeletePost post={post} fetchPosts={fetchPosts} />
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center">
+                  No posts exist.
+                </td>
+              </tr>
+            )}
           </tbody>
         </Table>
       </Row>
 
-      {/* Confirm deletion modal */}
       <Modal show={showConfirmModal} onHide={handleCancelDelete}>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Deletion</Modal.Title>
